@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './pages/Dashboard';
+import Courses from './pages/Courses';
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         {/* Page Content */}
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/courses" element={<div>Courses Page</div>} />
+          <Route path="/courses" element={<Courses />} />
           <Route path="/routine" element={<div>Routine Page</div>} />
         </Routes>
 
