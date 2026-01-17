@@ -2,33 +2,38 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaBookOpen, FaCheckCircle, FaClock } from 'react-icons/fa';
 
-// Import all our components
 import CourseList from '../components/CourseList';
 import ActivityChart from '../components/ActivityChart';
-import UpcomingTasks from '../components/UpcomingTasks'; // <--- NEW IMPORT
+import UpcomingTasks from '../components/UpcomingTasks';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [courses, setCourses] = useState([]);
   const [chartData, setChartData] = useState([]);
-  const [upcoming, setUpcoming] = useState([]); // <--- NEW STATE
+  const [upcoming, setUpcoming] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch all 4 endpoints at once
+        // 1. GET TOKEN
+        const token = localStorage.getItem('token');
+        const config = {
+          headers: { 'auth-token': token }
+        };
+
+        // 2. ATTACH TOKEN TO EVERY REQUEST
         const [statsRes, coursesRes, chartRes, tasksRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/dashboard/stats'),
-          axios.get('http://localhost:5000/api/dashboard/enrolled-courses'),
-          axios.get('http://localhost:5000/api/dashboard/activity-chart'),
-          axios.get('http://localhost:5000/api/dashboard/upcoming') // <--- NEW FETCH
+          axios.get('http://localhost:5000/api/dashboard/stats', config),
+          axios.get('http://localhost:5000/api/dashboard/enrolled-courses', config),
+          axios.get('http://localhost:5000/api/dashboard/activity-chart', config),
+          axios.get('http://localhost:5000/api/dashboard/upcoming', config)
         ]);
 
         setStats(statsRes.data);
         setCourses(coursesRes.data);
         setChartData(chartRes.data);
-        setUpcoming(tasksRes.data); // <--- SET NEW DATA
+        setUpcoming(tasksRes.data);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
@@ -43,35 +48,35 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      
       {/* 1. TOP STATS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard title="Total Enrolled" value={stats?.totalEnrolled} icon={<FaBookOpen />} color="blue" />
         <StatCard title="Course Completed" value={stats?.completedCourses} icon={<FaCheckCircle />} color="green" />
-        <StatCard title="Total Hours" value={`${stats?.totalHours}h`} icon={<FaClock />} color="orange" />
+        <StatCard title="Total Hours" value={`${stats?.totalHours || 0}h`} icon={<FaClock />} color="orange" />
       </div>
 
-      {/* 2. MIDDLE SECTION: CHART & LIST & TASKS */}
+      {/* 2. MIDDLE SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Left Column: Course List (Takes up 2/3 width) */}
         <div className="lg:col-span-2">
-          <CourseList courses={courses} />
+          {/* Show message if no courses found */}
+          {courses.length === 0 ? (
+            <div className="bg-white p-6 rounded-2xl shadow-sm text-center py-10">
+              <h3 className="text-gray-500">You haven't enrolled in any courses yet!</h3>
+            </div>
+          ) : (
+            <CourseList courses={courses} />
+          )}
         </div>
 
-        {/* Right Column: Chart & Tasks (Takes up 1/3 width) */}
-        {/* We use 'flex-col' to stack the Chart on top of the Tasks */}
         <div className="lg:col-span-1 flex flex-col gap-6">
           <ActivityChart data={chartData} />
-          <UpcomingTasks assignments={upcoming} /> {/* <--- THE NEW PART */}
+          <UpcomingTasks assignments={upcoming} />
         </div>
-
       </div>
     </div>
   );
 };
 
-// Helper component for the top cards
 const StatCard = ({ title, value, icon, color }) => {
   const colors = {
     blue: "bg-blue-100 text-blue-600",
