@@ -1,64 +1,51 @@
-import React, { useContext } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import Dashboard from './pages/Dashboard';
-import Courses from './pages/Courses';
+import React from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+// NOTICE: No "BrowserRouter" here!
+
 import Login from './pages/Login';
 import Register from './pages/Register';
-import AuthContext, { AuthProvider } from './context/AuthContext';
+import Dashboard from './pages/Dashboard';
+import CoursePlayer from './pages/CoursePlayer';
+import Exam from './pages/Exam';
+import Sidebar from './components/Sidebar';
 
-// Create a component to protect routes
-const PrivateRoute = ({ children }) => {
-  const { user, loading } = useContext(AuthContext);
-  if (loading) return <div>Loading...</div>;
-  return user ? children : <Navigate to="/login" />;
+// Helper to protect routes
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  return token ? children : <Navigate to="/login" />;
 };
 
-// Create a Layout component so Sidebar only shows when logged in
-const AppLayout = ({ children }) => (
-  <div className="flex bg-gray-50 min-h-screen">
-    <Sidebar />
-    <div className="flex-1 ml-64 p-8">
-      {/* Header Placeholder */}
-      <header className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Overview</h1>
-        <div className="w-10 h-10 rounded-full bg-gray-300 overflow-hidden">
-           {/* Display User Avatar here later */}
-           <img src="https://ui-avatars.com/api/?name=User" alt="Profile" />
-        </div>
-      </header>
-      {children}
-    </div>
-  </div>
-);
+const App = () => {
+  const location = useLocation();
+  // Hide sidebar on login/register screens
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
 
-function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <div className="flex">
+      {!isAuthPage && <Sidebar />}
 
-        {/* Protected Routes */}
-        <Route path="/" element={
-          <PrivateRoute>
-            <AppLayout>
-              <Dashboard />
-            </AppLayout>
-          </PrivateRoute>
-        } />
-        
-        <Route path="/courses" element={
-          <PrivateRoute>
-            <AppLayout>
-              <Courses />
-            </AppLayout>
-          </PrivateRoute>
-        } />
-      </Routes>
-    </AuthProvider>
+      <div className="flex-1">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          
+          <Route path="/dashboard" element={
+            <ProtectedRoute> <Dashboard /> </ProtectedRoute>
+          } />
+          
+          <Route path="/player/:id" element={
+            <ProtectedRoute> <CoursePlayer /> </ProtectedRoute>
+          } />
+
+          <Route path="/exam" element={
+            <ProtectedRoute> <Exam /> </ProtectedRoute>
+          } />
+
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+        </Routes>
+      </div>
+    </div>
   );
-}
+};
 
 export default App;

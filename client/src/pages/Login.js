@@ -1,66 +1,103 @@
-// client/src/pages/Login.js
-import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import AuthContext from "../context/AuthContext";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { FaEnvelope, FaLock, FaSignInAlt } from 'react-icons/fa';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const { login } = useContext(AuthContext);
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const navigate = useNavigate();
+
+  const { email, password } = formData;
+
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setLoading(true);
+    setError('');
+
     try {
-      const res = await axios.post("http://localhost:5000/api/user/login", {
+      // 1. Send Login Request
+      const res = await axios.post('http://localhost:5000/api/auth/login', {
         email,
-        password,
+        password
       });
-      // If successful, use the login function from context
-      login(res.data.user, res.data.token);
+
+      // 2. Save Token to Local Storage
+      localStorage.setItem('token', res.data.token);
+
+      // 3. Redirect to Dashboard
+      navigate('/dashboard');
+      
     } catch (err) {
-      setError(err.response?.data?.error || "Something went wrong");
+      setError(err.response?.data?.error || "Login Failed");
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Welcome Back!</h2>
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center p-4">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
         
-        {error && <div className="bg-red-100 text-red-600 p-3 rounded mb-4 text-sm">{error}</div>}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Welcome Back</h1>
+          <p className="text-gray-500 mt-2">Login to continue learning</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-600 text-sm font-medium mb-1">Email</label>
-            <input 
-              type="email" 
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+        {error && (
+          <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-center text-sm font-medium">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          
+          <div className="relative">
+            <FaEnvelope className="absolute top-3 left-3 text-gray-400" />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleChange}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-          <div>
-            <label className="block text-gray-600 text-sm font-medium mb-1">Password</label>
-            <input 
-              type="password" 
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+
+          <div className="relative">
+            <FaLock className="absolute top-3 left-3 text-gray-400" />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handleChange}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-          <button className="w-full bg-primary text-white py-2 rounded-lg font-bold hover:bg-indigo-600 transition">
-            Log In
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2"
+          >
+            {loading ? "Logging in..." : <><FaSignInAlt /> Login</>}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-500">
-          Don't have an account? <Link to="/register" className="text-primary font-bold">Sign up</Link>
+        <p className="mt-6 text-center text-gray-600 text-sm">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-blue-600 font-bold hover:underline">
+            Register
+          </Link>
         </p>
+
       </div>
     </div>
   );

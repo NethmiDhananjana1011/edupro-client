@@ -1,80 +1,80 @@
-import React from 'react';
-import axios from 'axios';
-import { FaCheckCircle, FaPlay } from 'react-icons/fa';
+
+import { FaCheckCircle, FaPlay } from 'react-icons/fa'; // <--- FaClock removed!
+import { Link } from 'react-router-dom'; // <--- ADD THIS
 
 const CourseList = ({ courses }) => {
   
-  // Function to handle the click
-  const handleProgress = async (courseId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/courses/${courseId}/progress`, {}, {
-        headers: { 'auth-token': token }
-      });
-      // Reload page to see the new bar (Simple way)
-      window.location.reload(); 
-    } catch (err) {
-      alert(err.response?.data?.error || "Error updating progress");
-    }
-  };
+  // Safety check: If no courses are passed, show a message
+  if (!courses || courses.length === 0) {
+    return (
+      <div className="p-4 text-gray-400 bg-white rounded-xl border border-gray-100">
+        No active courses found. Go to "My Course" to enroll!
+      </div>
+    );
+  }
 
   return (
-    <div className="mt-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-gray-800">My Learning</h2>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {courses.map((item) => (
-          <div key={item._id} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition">
-            
-            {/* Header: Title & Subject */}
-            <div className="flex justify-between items-start mb-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
-                {item.course.title.charAt(0)}
-              </div>
-              <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded">
-                {item.course.subject}
-              </span>
-            </div>
-
-            <h3 className="font-bold text-lg text-gray-800">{item.course.title}</h3>
-            <p className="text-sm text-gray-500 mt-1 mb-4">
-              {item.completedChapters} / {item.totalChapters} Chapters Done
-            </p>
-
-            {/* Progress Bar */}
-            <div className="w-full bg-gray-100 rounded-full h-2 mb-4">
-              <div 
-                className={`h-2 rounded-full ${item.status === 'Completed' ? 'bg-green-500' : 'bg-blue-600'}`} 
-                style={{ width: `${item.progress}%` }}
-              ></div>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-2">
-              {item.status === 'Completed' ? (
-                 <button disabled className="flex-1 bg-green-100 text-green-700 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-2">
-                   <FaCheckCircle /> Completed
-                 </button>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {courses.map((course) => (
+        <div key={course._id} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-md transition-shadow">
+          
+          {/* 1. Header: Icon & Subject */}
+          <div className="flex justify-between items-start mb-4">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-2xl">
+              {/* Show Image if available, otherwise show letter */}
+              {course.thumbnail ? (
+                <img src={course.thumbnail} alt={course.title} className="w-8 h-8 object-contain" />
               ) : (
-                <>
-                  <button className="flex-1 bg-gray-50 text-gray-600 py-2 rounded-lg text-sm font-bold hover:bg-gray-100">
-                    Open
-                  </button>
-                  <button 
-                    onClick={() => handleProgress(item.course._id)}
-                    className="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-blue-700 active:scale-95 transition"
-                  >
-                    +1 Chapter
-                  </button>
-                </>
+                <span className="text-blue-600 font-bold">{course.title ? course.title.charAt(0) : "C"}</span>
               )}
             </div>
-
+            <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">
+              {course.subject || "Course"}
+            </span>
           </div>
-        ))}
-      </div>
+
+          {/* 2. Title & Status */}
+          <div className="mb-4">
+            <h3 className="font-bold text-gray-800 text-lg leading-tight mb-1">
+              {course.title || "Untitled Course"}
+            </h3>
+            <p className="text-sm text-gray-400">
+              {course.completedChapters || 0} / {course.totalChapters || 10} Chapters Done
+            </p>
+          </div>
+
+          {/* 3. Progress Bar */}
+          <div className="w-full bg-gray-100 rounded-full h-2 mb-4">
+            <div 
+              className={`h-2 rounded-full transition-all duration-500 ${
+                course.progress === 100 ? 'bg-green-500' : 'bg-blue-600'
+              }`} 
+              style={{ width: `${course.progress || 0}%` }}
+            ></div>
+          </div>
+
+          {/* 4. Action Button */}
+          {course.status === 'Completed' ? (
+            <button className="w-full py-2 bg-green-50 text-green-600 font-semibold rounded-xl flex items-center justify-center gap-2 cursor-default">
+              <FaCheckCircle /> Completed
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <Link 
+  to={`/player/${course._id}`} 
+  state={{ title: course.title }} // <--- PASS THE TITLE HERE
+  className="flex-1 py-2 bg-gray-50 text-gray-600 font-medium rounded-xl hover:bg-gray-100 transition text-center"
+>
+  Open
+</Link>
+              <button className="flex-1 py-2 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow-lg shadow-blue-200">
+                <FaPlay className="text-xs" /> Resume
+              </button>
+            </div>
+          )}
+
+        </div>
+      ))}
     </div>
   );
 };
