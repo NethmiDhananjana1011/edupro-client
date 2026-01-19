@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import CoursePlayer from './pages/CoursePlayer';
 import Exam from './pages/Exam';
 import Sidebar from './components/Sidebar';
+import MyCourses from './pages/MyCourses';
 
 // Helper to protect routes
 const ProtectedRoute = ({ children }) => {
@@ -28,11 +29,13 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          
+        
           <Route path="/dashboard" element={
             <ProtectedRoute> <Dashboard /> </ProtectedRoute>
           } />
-          
+          <Route path="/my-courses" element={
+          <ProtectedRoute> <MyCourses /> </ProtectedRoute>
+          } />
           <Route path="/player/:id" element={
             <ProtectedRoute> <CoursePlayer /> </ProtectedRoute>
           } />
