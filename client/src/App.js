@@ -13,6 +13,8 @@ import Classroom from './pages/Classroom';
 import Routine from './pages/Routine';
 import Recording from './pages/Recording';
 import Resources from './pages/Resources';
+import Settings from './pages/Settings';
+import Help from './pages/Help';
 
 // Helper to protect routes
 const ProtectedRoute = ({ children }) => {
@@ -63,6 +65,8 @@ const App = () => {
       <Route path="/resources" element={
     <ProtectedRoute> <Resources /> </ProtectedRoute>
 } />
+      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+<Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
         </Routes>
       </div>
     </div>

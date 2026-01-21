@@ -28,8 +28,8 @@ const Sidebar = () => {
   ];
 
   const otherMenus = [
-    { name: "Settings", icon: <FaCog />, path: "/routine" },
-    { name: "Help", icon: <FaQuestionCircle />, path: "/routine" },
+    { name: "Settings", icon: <FaCog />, path: "/settings" }, // 👈 Path fixed
+    { name: "Help", icon: <FaQuestionCircle />, path: "/help" },   // 👈 Path fixed
   ];
 
   return (
