@@ -18,15 +18,18 @@ const Sidebar = () => {
   const mainMenus = [
     { name: "Home", icon: <FaHome />, path: "/dashboard" },
     { name: "My courses", icon: <FaBook />, path: "/my-courses" },
-    { name: "Routine", icon: <FaCalendarAlt />, path: "#" },
-    { name: "Recording", icon: <FaVideo />, path: "#" },
-    { name: "Resources", icon: <FaFolderOpen />, path: "#" },
+    
+    // 👇 Make sure these paths are all different!
+    { name: "Routine", icon: <FaCalendarAlt />, path: "/routine" }, 
+    { name: "Recording", icon: <FaVideo />, path: "/recording" },   
+    { name: "Resources", icon: <FaFolderOpen />, path: "/resources" }, 
+    
     { name: "Exam / Quiz", icon: <FaFolderOpen />, path: "/exam" },
   ];
 
   const otherMenus = [
-    { name: "Settings", icon: <FaCog />, path: "#" },
-    { name: "Help", icon: <FaQuestionCircle />, path: "#" },
+    { name: "Settings", icon: <FaCog />, path: "/routine" },
+    { name: "Help", icon: <FaQuestionCircle />, path: "/routine" },
   ];
 
   return (

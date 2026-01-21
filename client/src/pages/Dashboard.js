@@ -1,8 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // 👈 Import navigation tool
 import { FaBookOpen, FaClock, FaCheckCircle, FaFire, FaPlay, FaCalendarAlt, FaChevronRight, FaCheck, FaSpinner } from 'react-icons/fa';
 
 const Dashboard = () => {
-  
+  const navigate = useNavigate(); // 👈 Initialize navigation
+
   // --- DATA: UPCOMING CLASSES ---
   const upcomingClasses = [
     { id: 1, title: "Newtonian Mechanics - Class 5", subject: "Physics 1", tutor: "Rakesh Ahmed", date: "15th Oct, 2026", time: "12:00 PM", status: "Live", timeLeft: "2 min left", img: "https://i.pravatar.cc/150?u=rakesh", color: "orange" },
@@ -80,7 +82,12 @@ const Dashboard = () => {
                     <span className={`text-xs font-bold flex items-center gap-1 ${cls.status === 'Live' ? 'text-red-500' : 'text-blue-500'}`}>
                        <div className={`w-2 h-2 rounded-full ${cls.status === 'Live' ? 'bg-red-500 animate-pulse' : 'bg-blue-500'}`}></div> {cls.timeLeft}
                     </span>
-                    <button className={`px-6 py-2.5 rounded-xl text-sm font-bold text-white shadow-lg transition transform active:scale-95 flex items-center gap-2 ${cls.status === 'Live' ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200' : 'bg-emerald-300 cursor-not-allowed opacity-80'}`}>
+                    
+                    {/* 👇 THIS BUTTON IS NOW CONNECTED */}
+                    <button 
+                      onClick={() => navigate('/classroom')} 
+                      className={`px-6 py-2.5 rounded-xl text-sm font-bold text-white shadow-lg transition transform active:scale-95 flex items-center gap-2 ${cls.status === 'Live' ? 'bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200' : 'bg-emerald-300 cursor-not-allowed opacity-80'}`}
+                    >
                         <FaPlay className="text-xs" /> Join Class
                     </button>
                 </div>
@@ -104,7 +111,12 @@ const Dashboard = () => {
         {/* Table Rows */}
         <div className="space-y-4">
             {courses.map((course) => (
-                <div key={course.id} className="flex flex-col md:flex-row items-center justify-between p-4 border border-gray-50 rounded-2xl hover:bg-gray-50 transition group">
+                // 👇 THIS ROW IS NOW CLICKABLE
+                <div 
+                    key={course.id} 
+                    onClick={() => navigate('/my-courses')}
+                    className="flex flex-col md:flex-row items-center justify-between p-4 border border-gray-50 rounded-2xl hover:bg-gray-50 transition group cursor-pointer"
+                >
                     
                     {/* 1. Name & Info */}
                     <div className="flex items-center gap-4 w-full md:w-1/3">
@@ -162,7 +174,6 @@ const Dashboard = () => {
   );
 };
 
-// --- HELPER COMPONENT FOR STATS ---
 const StatCard = ({ icon, label, value }) => (
   <div className="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-4 transition hover:transform hover:-translate-y-1">
     <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center text-xl">

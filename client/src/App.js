@@ -9,6 +9,8 @@ import CoursePlayer from './pages/CoursePlayer';
 import Exam from './pages/Exam';
 import Sidebar from './components/Sidebar';
 import MyCourses from './pages/MyCourses';
+import Classroom from './pages/Classroom';
+import Routine from './pages/Routine';
 
 // Helper to protect routes
 const ProtectedRoute = ({ children }) => {
@@ -45,6 +47,14 @@ const App = () => {
           } />
 
           <Route path="/" element={<Navigate to="/dashboard" />} />
+
+          <Route path="/classroom" element={
+            <ProtectedRoute> <Classroom /> </ProtectedRoute>
+          } />
+
+                <Route path="/routine" element={
+          <ProtectedRoute> <Routine /> </ProtectedRoute>
+      } />
         </Routes>
       </div>
     </div>
