@@ -12,6 +12,7 @@ import MyCourses from './pages/MyCourses';
 import Classroom from './pages/Classroom';
 import Routine from './pages/Routine';
 import Recording from './pages/Recording';
+import Resources from './pages/Resources';
 
 // Helper to protect routes
 const ProtectedRoute = ({ children }) => {
@@ -58,6 +59,9 @@ const App = () => {
       } />
       <Route path="/recording" element={
     <ProtectedRoute> <Recording /> </ProtectedRoute>
+} />
+      <Route path="/resources" element={
+    <ProtectedRoute> <Resources /> </ProtectedRoute>
 } />
         </Routes>
       </div>
