@@ -11,6 +11,7 @@ import Sidebar from './components/Sidebar';
 import MyCourses from './pages/MyCourses';
 import Classroom from './pages/Classroom';
 import Routine from './pages/Routine';
+import Recording from './pages/Recording';
 
 // Helper to protect routes
 const ProtectedRoute = ({ children }) => {
@@ -55,6 +56,9 @@ const App = () => {
                 <Route path="/routine" element={
           <ProtectedRoute> <Routine /> </ProtectedRoute>
       } />
+      <Route path="/recording" element={
+    <ProtectedRoute> <Recording /> </ProtectedRoute>
+} />
         </Routes>
       </div>
     </div>
