@@ -5,18 +5,30 @@ import { FaGoogle, FaFacebook } from 'react-icons/fa';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState(''); // Added error state to show messages
   const navigate = useNavigate();
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Clear previous errors
+
     try {
-      // In a real app: const res = await axios.post('http://localhost:5000/api/auth/login', formData);
-      // localStorage.setItem('token', res.data.token);
+      // 🟢 1. THIS IS THE KEY CHANGE: Connect to your running Server
+      const res = await axios.post('http://localhost:5000/api/auth/login', formData);
+      
+      // 🟢 2. Save the "Token" (The key that proves you are logged in)
+      localStorage.setItem('token', res.data.token);
+      
+      // 3. Navigate to Dashboard
+      console.log("Login Success!");
       navigate('/dashboard');
+
     } catch (err) {
-      alert("Login Failed. Try again.");
+      console.error(err);
+      // Show the actual error from the backend (like "Invalid Credentials")
+      setError(err.response?.data?.msg || "Login Failed. Please check your email and password.");
     }
   };
 
@@ -32,13 +44,20 @@ const Login = () => {
             <p className="text-gray-400 text-sm mt-2">Please enter your details to continue.</p>
           </div>
 
+          {/* 🔴 Error Message Alert (New) */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 text-sm font-bold rounded-lg text-center border border-red-200">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <input 
-              type="email" name="email" placeholder="Email or Username" onChange={handleChange}
+              type="email" name="email" placeholder="Email Address" onChange={handleChange} required
               className="w-full p-4 bg-gray-50 rounded-xl border-none shadow-sm focus:ring-2 focus:ring-blue-400 outline-none text-gray-600 placeholder-gray-400 transition"
             />
             <input 
-              type="password" name="password" placeholder="Password" onChange={handleChange}
+              type="password" name="password" placeholder="Password" onChange={handleChange} required
               className="w-full p-4 bg-gray-50 rounded-xl border-none shadow-sm focus:ring-2 focus:ring-blue-400 outline-none text-gray-600 placeholder-gray-400 transition"
             />
             
@@ -81,8 +100,7 @@ const Login = () => {
 
           <div className="relative z-10 text-center text-white p-8">
             
-            {/* --- YOUR NEW LOGO IS HERE --- */}
-            {/* I added 'bg-white' and 'rounded-xl' to make the logo pop against the blue background */}
+            {/* LOGO */}
             <div className="bg-white p-4 rounded-3xl shadow-lg inline-block mb-6">
                 <img src="/logo.png" alt="EduPro Logo" className="w-48 mx-auto" />
             </div>
