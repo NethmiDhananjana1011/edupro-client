@@ -1,7 +1,5 @@
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-// NOTICE: No "BrowserRouter" here!
-
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -15,6 +13,8 @@ import Recording from './pages/Recording';
 import Resources from './pages/Resources';
 import Settings from './pages/Settings';
 import Help from './pages/Help';
+import AdminDashboard from './pages/AdminDashboard';
+import AddCourse from './pages/AddCourse';
 
 // Helper to protect routes
 const ProtectedRoute = ({ children }) => {
@@ -35,12 +35,12 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-        
+
           <Route path="/dashboard" element={
             <ProtectedRoute> <Dashboard /> </ProtectedRoute>
           } />
           <Route path="/my-courses" element={
-          <ProtectedRoute> <MyCourses /> </ProtectedRoute>
+            <ProtectedRoute> <MyCourses /> </ProtectedRoute>
           } />
           <Route path="/player/:id" element={
             <ProtectedRoute> <CoursePlayer /> </ProtectedRoute>
@@ -56,17 +56,19 @@ const App = () => {
             <ProtectedRoute> <Classroom /> </ProtectedRoute>
           } />
 
-                <Route path="/routine" element={
-          <ProtectedRoute> <Routine /> </ProtectedRoute>
-      } />
-      <Route path="/recording" element={
-    <ProtectedRoute> <Recording /> </ProtectedRoute>
-} />
-      <Route path="/resources" element={
-    <ProtectedRoute> <Resources /> </ProtectedRoute>
-} />
-      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-<Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
+          <Route path="/routine" element={
+            <ProtectedRoute> <Routine /> </ProtectedRoute>
+          } />
+          <Route path="/recording" element={
+            <ProtectedRoute> <Recording /> </ProtectedRoute>
+          } />
+          <Route path="/resources" element={
+            <ProtectedRoute> <Resources /> </ProtectedRoute>
+          } />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/help" element={<ProtectedRoute><Help /></ProtectedRoute>} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/add-course" element={<AddCourse />} />
         </Routes>
       </div>
     </div>
