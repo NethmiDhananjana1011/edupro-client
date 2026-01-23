@@ -18,9 +18,27 @@ const AddCourse = () => {
     setCourse({ ...course, [e.target.name]: e.target.value });
   };
 
-  const handlePublish = (e) => {
+  const handlePublish = async (e) => {
     e.preventDefault();
-    alert("✅ Course Published Successfully!");
+
+    try {
+      const response = await fetch('http://localhost:5000/api/courses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(course),
+      });
+
+      if (response.ok) {
+        alert("✅ Course Published to Database!");
+        // Optional: Redirect to Dashboard
+        // navigate('/dashboard'); 
+      } else {
+        alert("❌ Failed to publish course.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("❌ Server Error");
+    }
   };
 
   return (
