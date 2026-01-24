@@ -1,22 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { useNavigate } from 'react-router-dom';
-import { FaBookOpen, FaClock, FaCheckCircle, FaFire, FaPlay, FaCalendarAlt, FaChevronRight, FaCheck, FaSpinner, FaLaptopCode } from 'react-icons/fa';
+import { FaBookOpen, FaClock, FaCheckCircle, FaFire, FaPlay, FaCalendarAlt, FaSpinner, FaLaptopCode } from 'react-icons/fa';
 
 const Dashboard = () => {
   const navigate = useNavigate();
+
+  // State for Real Courses
+  const [courses, setCourses] = useState([]);
+
+  // Fetch Courses from Server when page loads
+ useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        // 👇 Get the token from storage
+        const token = localStorage.getItem('token'); 
+        
+        const res = await fetch('http://localhost:5000/api/courses', {
+          headers: {
+            // 👇 Send the token to the server
+            'Authorization': `Bearer ${token}` 
+          }
+        });
+
+        if (res.ok) {
+           const data = await res.json();
+           setCourses(data);
+        } else {
+           console.error("Server Error:", res.status);
+        }
+      } catch (err) {
+        console.error("Error fetching courses:", err);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   // --- DATA: ICT UPCOMING CLASSES ---
   const upcomingClasses = [
     { id: 1, title: "React JS: Hooks & Context", subject: "Web Dev", tutor: "Sarah Jenkins", date: "Today", time: "04:00 PM", status: "Live", timeLeft: "Live Now", img: "https://i.pravatar.cc/150?u=sarah", color: "blue" },
     { id: 2, title: "SQL Database Design", subject: "Database", tutor: "Michael Chen", date: "Tomorrow", time: "10:00 AM", status: "Upcoming", timeLeft: "18 hr left", img: "https://i.pravatar.cc/150?u=mike", color: "orange" }
-  ];
-
-  // --- DATA: ICT COURSE LIST ---
-  const courses = [
-    { id: 1, title: "Full Stack Web Development", chapters: 12, lectures: 48, progress: 65, score: 92, status: "In progress", color: "bg-blue-600", text: "JS" },
-    { id: 2, title: "Python for Data Science", chapters: 8, lectures: 32, progress: 30, score: 85, status: "In progress", color: "bg-yellow-500", text: "Py" },
-    { id: 3, title: "Cyber Security Essentials", chapters: 6, lectures: 24, progress: 10, score: 0, status: "In progress", color: "bg-red-600", text: "Sec" },
-    { id: 4, title: "Introduction to Networking", chapters: 5, lectures: 20, progress: 100, score: 95, status: "Completed", color: "bg-emerald-500", text: "Net" },
   ];
 
   return (
@@ -90,39 +112,42 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* COURSE LIST */}
+      {/* REAL COURSE LIST (From Database) */}
       <h2 className="text-xl font-bold text-gray-800 mb-4">My Tech Stack ({courses.length})</h2>
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 overflow-x-auto">
-        <div className="hidden md:flex justify-between text-xs font-bold text-gray-400 uppercase mb-4 px-4">
-            <div className="w-1/3">Course name</div>
-            <div className="w-1/4">Progress</div>
-            <div className="w-1/6 text-center">Score</div>
-            <div className="w-1/6 text-right">Status</div>
-        </div>
-        <div className="space-y-4">
+        {courses.length > 0 ? (
+          <div className="space-y-4">
             {courses.map((course) => (
-                <div key={course.id} onClick={() => navigate('/classroom')} className="flex flex-col md:flex-row items-center justify-between p-4 border border-gray-50 rounded-2xl hover:bg-gray-50 transition group cursor-pointer">
+                <div key={course._id} onClick={() => navigate('/classroom')} className="flex flex-col md:flex-row items-center justify-between p-4 border border-gray-50 rounded-2xl hover:bg-gray-50 transition group cursor-pointer">
                     <div className="flex items-center gap-4 w-full md:w-1/3">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm ${course.color}`}>{course.text}</div>
+                        {course.thumbnail ? (
+                           <img src={course.thumbnail} alt={course.title} className="w-12 h-12 rounded-xl object-cover shadow-sm" />
+                        ) : (
+                           <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm bg-blue-600">JS</div>
+                        )}
                         <div>
                             <h4 className="font-bold text-gray-800">{course.title}</h4>
-                            <div className="text-xs text-gray-400 mt-0.5">{course.chapters} modules • {course.lectures} projects</div>
+                            <div className="text-xs text-gray-400 mt-0.5">{course.category} • by {course.tutor}</div>
                         </div>
                     </div>
                     <div className="w-full md:w-1/4 px-2 my-4 md:my-0">
                         <div className="w-full bg-gray-100 rounded-full h-2">
-                            <div className={`h-2 rounded-full ${course.progress === 100 ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${course.progress}%` }}></div>
+                            <div className="h-2 rounded-full bg-blue-500" style={{ width: '50%' }}></div>
                         </div>
                     </div>
-                    <div className="w-full md:w-1/6 text-center font-bold text-gray-700">{course.score}%</div>
                     <div className="w-full md:w-1/6 flex justify-end">
-                        <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold border ${course.status === 'Completed' ? 'bg-white border-emerald-200 text-emerald-600' : 'bg-white border-blue-200 text-blue-600'}`}>
-                            {course.status === 'Completed' ? <FaCheck /> : <FaSpinner className="animate-spin-slow" />} {course.status}
+                        <div className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold border bg-white border-blue-200 text-blue-600">
+                             <FaSpinner className="animate-spin-slow" /> In Progress
                         </div>
                     </div>
                 </div>
             ))}
-        </div>
+          </div>
+        ) : (
+          <div className="text-center py-10 text-gray-400">
+             <p>No courses found. Add one from the Admin Panel!</p>
+          </div>
+        )}
       </div>
     </div>
   );
